@@ -1,16 +1,66 @@
-text_list = []
+def get_sorted_info_about_lines(files_list):
+    result = {}
+    for task_name in files_list:
+        try:
+            with open(task_name, "r", encoding='utf-8') as listed_file:
+                lines_count = 0
+                end_of_task = False
+                while not end_of_task:
+                    task_string = listed_file.readline()
+                    striped_line = task_string.strip()
+                    if task_string:
+                        if striped_line:
+                            lines_count += 1
+                    else:
+                        end_of_task = True
+                result[task_name] = lines_count
+        except NameError:
+            print(f"Неверное имя файла {task_name}")
+        except FileNotFoundError:
+            print(f"Файл не найден {task_name}")
+        except OSError:
+            print(f"Невозможно открыть файл {task_name}")
+        finally:
+            listed_file.close()
+    return dict(sorted(result.items(), key=lambda x: x[1]))
 
-file_names = ('1.txt', '2.txt', '3.txt')
-for file_name in file_names:
-    with open (file_name, encoding= 'utf-8') as text_files:
-        text_files_list = text_files.readlines()
-        txt_all_list = [len(text_files_list), file_name, text_files_list]
-        text_list.append(txt_all_list)
-text_list.sort()
+def gather_files(sorted_line_file, files_info):
+    try:
+        with open(sorted_line_file, "w", encoding='utf-8') as sorted_line_file:
+            for file_name, lines_count in files_info.items():
+                try:
+                    with open(file_name, "r", encoding='utf-8') as litsed_file:
+                        sorted_line_file.write(f"Имя файла: {file_name}\n")
+                        sorted_line_file.write(f"[{str(lines_count)}]строк\n")
+                        end_of_file = False
+                        while not end_of_file:
+                            file_string = litsed_file.readline()
+                            striped_line = file_string.strip()
+                            if file_string:
+                                if striped_line:
+                                    sorted_line_file.write(f"{striped_line}\n")
+                            else:
+                                end_of_file = True
+                except NameError:
+                    print(f"Неверное имя файла {file_name}")
+                except FileNotFoundError:
+                    print(f"Файл не найден {file_name}")
+                except OSError:
+                    print(f"Невозможно открыть файл {file_name}")
+                finally:
+                    litsed_file.close()
+    except NameError:
+        print(f"Неверное имя файла {sorted_line_file}")
+    except FileNotFoundError:
+        print(f"Файл не найден {sorted_line_file}")
+    except OSError:
+        print(f"Невозможно открыть файл {sorted_line_file}")
+    finally:
+        sorted_line_file.close()
+    print("Запись в файл завершена")
 
-sorted_text = (f'{text_list[0][1]}\n{text_list[0][0]}\n{text_list[0][2]}'
-            f'\n\n{text_list[1][1]}\n{text_list[1][0]}\n{text_list[1][2]}'
-            f'\n\n{text_list[2][1]}\n{text_list[2][0]}\n{text_list[2][2]}')
 
-with open ('sorted_text.txt', 'w', encoding= 'utf-8') as new_file:
-    new_file.write(sorted_text)
+if __name__ == '__main__':
+    files_list = ['1.txt', '2.txt', '3.txt']
+    files_info = get_sorted_info_about_lines(files_list)
+    gather_files('sorted_line_file.txt', files_info)
